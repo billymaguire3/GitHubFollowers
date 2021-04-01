@@ -79,6 +79,9 @@ class SearchViewController: UIViewController {
         // Setting the delegate
         usernameTextField.delegate = self
         
+        // Add Clear button in Text Field
+        usernameTextField.clearButtonMode = .whileEditing
+        
         NSLayoutConstraint.activate([
             usernameTextField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 48),
             usernameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),

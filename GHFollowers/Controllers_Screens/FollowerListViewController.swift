@@ -79,7 +79,9 @@ class FollowerListViewController: UIViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
         // use of calling on Main thread
 //        DispatchQueue.main.async {
-//            self.dataSource.apply(snapshot, animatingDifferences: true)
+//            self.dataSource.apply(snapshot, animatingDifferences: true) {
+//                print("Successfully applied snapshot to Collection View")
+//            }
 //        }
     }
 }
