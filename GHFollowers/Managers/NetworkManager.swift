@@ -5,14 +5,15 @@
 //  Created by William Maguire on 3/29/21.
 //
 
-import Foundation
+import UIKit
 
 // MARK: - New Swift 5 Result Network Request Style
 class NetworkManager {
     // static means every netowrk manager will have the shared property. Singleton
     static let shared = NetworkManager()
-
-    let baseUrl = "https://api.github.com/users/"
+    private let baseUrl = "https://api.github.com/users/"
+    
+    let cache = NSCache<NSString, UIImage>()
 
     private init() {}
 
