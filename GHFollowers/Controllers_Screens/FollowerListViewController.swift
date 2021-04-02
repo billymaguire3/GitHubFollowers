@@ -50,10 +50,14 @@ class FollowerListViewController: UIViewController {
     }
     
     func getFollowers(username: String, page: Int) {
+        
+        // show loading screen which comes from the UIViewController extension
+        showLoadingView()
+        
         // MARK: - New Swift 5 Result type of calling our network request
         NetworkManager.shared.getFollowers(for: username, page: page) { [weak self] (result) in
             guard let self = self else { return }
-            
+            self.dismissLoadingView()
             switch result {
             case .success(let followers):
                 if followers.count < 100 { self.hasMoreFollowers = false }
@@ -103,8 +107,6 @@ extension FollowerListViewController: UICollectionViewDelegate {
         }
     }
 }
-
-
 
 
 // MARK: - Old/Fundamental Way of calling our network request
