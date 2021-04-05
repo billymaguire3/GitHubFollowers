@@ -18,6 +18,7 @@ class FollowerListViewController: UIViewController {
     var filteredFollowers: [Follower] = []
     var page = 1
     var hasMoreFollowers = true
+    var isSearching = false
     
     var collectionView: UICollectionView!
     // Declaring the data source: has to know about our section and our items
@@ -113,6 +114,7 @@ class FollowerListViewController: UIViewController {
 }
 
 extension FollowerListViewController: UICollectionViewDelegate {
+    
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
@@ -124,21 +126,33 @@ extension FollowerListViewController: UICollectionViewDelegate {
             getFollowers(username: username, page: page)
         }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        print("Index Path Item: \(indexPath.item)")
+        let activeArray = isSearching ? filteredFollowers : followers
+        let follower = activeArray[indexPath.item]
+        
+        let destinationViewController = UserInfoViewController()
+        destinationViewController.username = follower.login
+        let navController = UINavigationController(rootViewController: destinationViewController)
+        present(navController, animated: true)
+    }
 }
 
 extension FollowerListViewController: UISearchResultsUpdating, UISearchBarDelegate {
     
     func updateSearchResults(for searchController: UISearchController) {
         guard let input = searchController.searchBar.text, !input.isEmpty else { return }
+        isSearching = true
         filteredFollowers = followers.filter { $0.login.lowercased().contains(input.lowercased()) }
         updateData(on: filteredFollowers)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        isSearching = false
         updateData(on: followers)
     }
 }
-
 
 // MARK: - Old/Fundamental Way of calling our network request
 //        NetworkManager.shared.getFollowers(for: username, page: 1) { (followers, errorMessage) in
