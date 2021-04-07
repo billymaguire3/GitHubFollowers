@@ -63,7 +63,7 @@ class FollowerListViewController: UIViewController {
     }
     
     func getFollowers(username: String, page: Int) {
-        
+    
         // show loading screen which comes from the UIViewController extension
         showLoadingView()
         
