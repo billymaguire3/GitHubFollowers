@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol FollowerListViewControllerDelegate: class {
+    func didRequestFollowers(for username: String)
+}
+
 class FollowerListViewController: UIViewController {
 
     enum Section {
@@ -59,7 +63,7 @@ class FollowerListViewController: UIViewController {
         searchController.searchBar.placeholder = "Search by username"
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
+//        navigationItem.hidesSearchBarWhenScrolling = false
     }
     
     func getFollowers(username: String, page: Int) {
@@ -134,6 +138,10 @@ extension FollowerListViewController: UICollectionViewDelegate {
         
         let destinationViewController = UserInfoViewController()
         destinationViewController.username = follower.login
+        
+        // AKA: FollowerListViewController is listening to the UserInfoViewController. Communication Pathway
+        destinationViewController.delegate = self
+        
         let navController = UINavigationController(rootViewController: destinationViewController)
         present(navController, animated: true)
     }
@@ -152,6 +160,21 @@ extension FollowerListViewController: UISearchResultsUpdating, UISearchBarDelega
         isSearching = false
         updateData(on: followers)
     }
+}
+
+extension FollowerListViewController: FollowerListViewControllerDelegate {
+    
+    func didRequestFollowers(for username: String) {
+        self.username = username
+        title = username
+        page = 1
+        followers.removeAll()
+        filteredFollowers.removeAll()
+        collectionView.setContentOffset(.zero, animated: true)
+        getFollowers(username: username, page: page)
+    }
+    
+    
 }
 
 // MARK: - Old/Fundamental Way of calling our network request
