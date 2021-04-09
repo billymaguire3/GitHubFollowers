@@ -46,6 +46,9 @@ class FollowerListViewController: UIViewController {
         view.backgroundColor = .systemBackground
         navigationController?.isNavigationBarHidden = false
         navigationController?.navigationBar.prefersLargeTitles = true
+        
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
+        navigationItem.rightBarButtonItem = addButton
     }
     
     func configureCollectionView() {
@@ -112,6 +115,36 @@ class FollowerListViewController: UIViewController {
         DispatchQueue.main.async {
             self.dataSource.apply(snapshot, animatingDifferences: true) {
 //                print("Can enter success print statement or success logic code here")
+            }
+        }
+    }
+    
+    // Network call to create a Follower object
+    @objc func addButtonTapped() {
+        showLoadingView()
+        
+        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in
+            guard let self = self else { return }
+            self.dismissLoadingView()
+            
+            switch result {
+            case .success(let user):
+                // Create Follower object
+                let favorite = Follower(login: user.login, avatarUrl: user.avatarUrl)
+                // now use Persistence Manager
+                PersistenceManager.updateWith(favorite: favorite, actionType: .add) { [weak self] error in
+                    guard let self = self else { return }
+                    // If we have an error...
+                    guard let error = error else {
+                        self.presentGFAlertOnMainThread(title: "Success", message: "Successfully added user to favorites", buttonTitle: "Ok")
+                        return
+                    }
+                    // If there is an error...
+                    self.presentGFAlertOnMainThread(title: "Already Exists", message: error.rawValue, buttonTitle: "Ok")
+                }
+            case .failure(let error):
+                self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
+                return
             }
         }
     }

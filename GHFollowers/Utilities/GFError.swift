@@ -13,6 +13,8 @@ enum GFError: String, Error {
     case unableToComplete = "Unable to complete request. Please check your internet connection"
     case invalidResponse = "Invalid response from server. Please try again."
     case invalidData = "Data received from server was invalid. Please try again."
+    case unableToAddFavorite = "There was an error adding this user as a favorite, please try again."
+    case favoriteAlreadyExists = "This user already exists in favorites."
 }
 
 // MARK: - Old/Fundamental way of creating a raw value Enum for Errors
