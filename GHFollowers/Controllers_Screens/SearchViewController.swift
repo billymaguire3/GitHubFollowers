@@ -12,6 +12,7 @@ class SearchViewController: UIViewController {
     let logoImageView = UIImageView()
     let usernameTextField = GFTextField()
     let callToActionButton = GFButton(backgroundColor: .systemGreen, title: "Get Followers")
+    var logoImageViewTopConstraint: NSLayoutConstraint!
     
     // Computed Property
     // Returns True if the text field is not empty due to bang operator
@@ -32,12 +33,13 @@ class SearchViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
+        usernameTextField.text = ""
     }
     
     // MARK: - Buttons Delegates/Targets
     
     func createDismissKeyboardTapGesture() {
-        let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
+        let tap = UITapGestureRecognizer(target: view, action: #selector(UIView.endEditing))
         view.addGestureRecognizer(tap)
     }
     
@@ -51,10 +53,12 @@ class SearchViewController: UIViewController {
             presentGFAlertOnMainThread(title: "Empty Username", message: "Please Enter a Username! 🙃", buttonTitle: "Ok ")
             return
         }
+        usernameTextField.resignFirstResponder()
         
-        let followerListVC = FollowerListViewController()
-        followerListVC.username = usernameTextField.text
-        followerListVC.title = usernameTextField.text
+        guard let userInput = usernameTextField.text else { return }
+        let followerListVC = FollowerListViewController(username: userInput)
+//        followerListVC.username = usernameTextField.text
+//        followerListVC.title = usernameTextField.text
         navigationController?.pushViewController(followerListVC, animated: true)
     }
     
@@ -63,10 +67,13 @@ class SearchViewController: UIViewController {
     func configureLogoImageView() {
         view.addSubview(logoImageView)
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        logoImageView.image = UIImage(named: "gh-logo")!
+        logoImageView.image = Images.ghLogo
         
-        NSLayoutConstraint.activate([
-            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80), // Y coordinate
+        let topConstraintConstant: CGFloat = DeviceTypes.isiPhoneSE || DeviceTypes.isiPhone8Zoomed ? 20 : 80
+        logoImageViewTopConstraint = logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: topConstraintConstant)
+        logoImageViewTopConstraint.isActive = true
+        
+        NSLayoutConstraint.activate([ // Y coordinate
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor), // X coordinate
             logoImageView.heightAnchor.constraint(equalToConstant: 200), // Height
             logoImageView.widthAnchor.constraint(equalToConstant: 200) // Width
@@ -78,9 +85,6 @@ class SearchViewController: UIViewController {
         
         // Setting the delegate
         usernameTextField.delegate = self
-        
-        // Add Clear button in Text Field
-        usernameTextField.clearButtonMode = .whileEditing
         
         NSLayoutConstraint.activate([
             usernameTextField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 48),
